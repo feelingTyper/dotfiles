@@ -18,6 +18,7 @@
         }
     },
     "coc.preferences.semanticTokensHighlights": false,
+    "coc.preferences.useQuickfixForLocations": false,
     "coc.preferences.enableFloatHighlight": true,
     "coc.preferences.snippetStatusText": "Ⓢ ",
     "coc.preferences.extensionUpdateCheck": "daily",
@@ -35,7 +36,7 @@
     "suggest.floatEnable": true,
     "suggest.detailField": "preview",
     "suggest.snippetIndicator": "",
-    "suggest.triggerCompletionWait": 100,
+    "suggest.triggerCompletionWait": 50,
     "suggest.echodocSupport": true,
     "suggest.completionItemKindLabels": {
         "keyword": "\uf1de",
@@ -77,10 +78,13 @@
     "diagnostic.virtualText": false,
     "codeLens.enable": true,
     "list.previewHighlightGroup": "Statement",
-    "list.nextKeymap": "<C-e>",
-    "list.previousKeymap": "<C-u>",
+    "list.nextKeymap": "<C-j>",
+    "list.previousKeymap": "<C-k>",
     "list.maxPreviewHeight": 30,
     "list.previewSplitRight": false,
+    "list.source.files.defaultOptions": [
+        "--number-select"
+    ],
     "importCost.bundleSizeDecoration": "both",
     "importCost.typescriptExtensions": [
         "\\.tsx?$"
@@ -172,7 +176,7 @@
         "yy": "copyFile",
         "dd": "cutFile",
         "pp": "pasteFile",
-        "dD": "deleteForever",
+        "d": "deleteForever",
         "a": "addFile",
         "M": "addDirectory",
         "cw": "rename",
@@ -198,7 +202,7 @@
     },
     "tslint.autoFixOnSave": false,
     "python.autoComplete.addBrackets": true,
-    "python.jediEnabled": false,
+    "python.jediEnabled": true,
     "python.formatting.provider": "yapf",
     "python.formatting.yapfArgs": [
         "--style",

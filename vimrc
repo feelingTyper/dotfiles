@@ -15,10 +15,9 @@ Plug 'jistr/vim-nerdtree-tabs'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tell-k/vim-autopep8'
 Plug 'jiangmiao/auto-pairs'
-" Plug 'vim-airline/vim-airline'
-Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
-" Plug 'bagrat/vim-buffet'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'bling/vim-bufferline'
 Plug 'iamcco/mathjax-support-for-mkdp'
 Plug 'iamcco/markdown-preview.vim'
 Plug 'rakr/vim-one'
@@ -54,6 +53,10 @@ Plug 'edkolev/tmuxline.vim'
 Plug 'voldikss/vim-translator'
 Plug 'powerline/powerline', {'rtp': 'powerline/bindings/vim'}
 Plug 'github/copilot.vim'
+" Plug 'mildred/vim-bufmru'
+" Plug 'liuchengxu/vim-which-key'
+" Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+" Plug 'skywind3000/vim-quickui'
 
 call plug#end()
 
@@ -161,6 +164,9 @@ map 0 ^
 " undo
 set undofile
 set undodir=~/.vim/undodir
+
+nnoremap <leader>ev :vsp $MYVIMRC<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " no clear screen when exit vim
 " set t_ti= t_te=
@@ -322,8 +328,21 @@ let g:go_highlight_generate_tags = 1
 let g:go_fmt_fail_silently = 1
 " 直接通过 go run 执行当前文件
 autocmd FileType go nmap <leader>r :GoRun %<CR>
-autocmd FileType go nmap <leader>T :GoTest<CR>
+autocmd FileType go nmap <leader>T :GoTestFunc<CR>
 autocmd FileType go nmap <leader>b :GoBuild<CR>
+augroup go_map
+  au!
+  au FileType go nmap <leader>rt <Plug>(go-run-tab)
+  au FileType go nmap <leader>rs <Plug>(go-run-split)
+  au FileType go nmap <leader>rv <Plug>(go-run-vertical)
+augroup END
+
+let g:go_term_mode = "split"
+let g:go_term_enabled = 1
+let g:go_term_reuse = 1
+let g:go_term_close_on_exit = 0
+let g:go_term_height = 20
+let g:go_term_width = 30
 
 
 "NerdTree
@@ -512,6 +531,7 @@ nmap <silent> gdd :tab sp<CR><Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gu <Plug>(coc-references-used)
 
 " Use U to show documentation in preview window
 nnoremap <silent> U :call ShowDocumentation()<CR>
@@ -562,6 +582,16 @@ nmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
 " Run the Code Lens action on the current line
 nmap <leader>cl  <Plug>(coc-codelens-action)
 
+" Remap <C-f> and <C-b> to scroll float windows/popups
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
 " Add `:Format` command to format current buffer
 command! -nargs=0 Format :call CocActionAsync('format')
 
@@ -574,8 +604,13 @@ command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.org
 " Add (Neo)Vim's native statusline support
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline
+let g:airline#extensions#coc#show_coc_status = 1
+let airline#extensions#coc#error_symbol = 'E:'
+let airline#extensions#coc#warning_symbol = 'W:'
+let airline#extensions#coc#stl_format_err = '%C(L%L)'
+let airline#extensions#coc#stl_format_warn = '%C(L%L)'
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-autocmd User CocStatusChange redrawstatus
+" autocmd User CocStatusChange redrawstatus
 
 
 
@@ -616,41 +651,196 @@ let g:translator_default_engines = ['youdao', 'bing', 'haici']
 " Display translation in a window
 nmap <silent> <Leader>t <Plug>TranslateW
 
-" lightline
-let g:lightline = {
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'filename', 'modified' ] ],
-      \   'right': [ [ 'lineinfo' ],
-      \              [ 'percent' ],
-      \              [ 'fileformat', 'fileencoding', 'filetype', 'charvaluehex' ] ]
-      \ },
-      \ 'tabline': {
-      \   'left': [ ['buffers'] ],
-      \   'right': [ ['close'] ]
-      \ },
-      \ 'component_expand': {
-      \   'buffers': 'lightline#bufferline#buffers'
-      \ },
-      \ 'component_type': {
-      \   'buffers': 'tabsel'
-      \ },
-      \ 'separator': {'left': ' ', 'right': ' '},
-      \ 'subseparator': {'left': ' ', 'right': ' '}
-      \ }
+"
+map <A-B> :BufMRUPrev<CR>
+map <A-b> :BufMRUNext<CR>
 
-" bufferline
-let g:lightline#bufferline#enable_devicons = 1
-let g:lightline#bufferline#enable_nerdfont = 1
-let g:lightline#bufferline#icon_position = 'right'
-let g:lightline#bufferline#show_number = 3
+" Key above escape (on french keyboards) to commit current buffer as last
+" " used
+" map ² :BufMRUCommit<CR>
+"
+" " Tab and Shift-Tab in normal mode to navigate buffers
+map <Tab> :BufMRUNext<CR>
+map <S-Tab> :BufMRUPrev<CR>"
 
-let g:lightline#bufferline#number_map = {
-\ 0: '⁰', 1: '¹ ', 2: '² ', 3: '³ ', 4: '⁴ ',
-\ 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'}
+"vim-airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+let g:airline#extensions#tabline#tab_nr_type = 2
+let g:airline#extensions#tabline#show_splits = 1
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#alt_sep = 1
+let g:airline#extensions#tabline#show_tabs = 1
+let g:airline#extensions#tabline#show_tab_count = 1
+let g:airline#extensions#tabline#show_tab_type = 1
+let g:airline#extensions#tabline#buffer_idx_format = {
+    \ '0': '0 ',
+    \ '1': '1 ',
+    \ '2': '2 ',
+    \ '3': '3 ',
+    \ '4': '4 ',
+    \ '5': '5 ',
+    \ '6': '6 ',
+    \ '7': '7 ',
+    \ '8': '8 ',
+    \ '9': '9 '
+    \}
+let g:airline_powerline_fonts = 1
+" let g:airline_mode_map = {
+"     \ '__'     : '-',
+"     \ 'c'      : 'C',
+"     \ 'i'      : 'I',
+"     \ 'ic'     : 'I',
+"     \ 'ix'     : 'I',
+"     \ 'n'      : 'N',
+"     \ 'multi'  : 'M',
+"     \ 'ni'     : 'N',
+"     \ 'no'     : 'N',
+"     \ 'R'      : 'R',
+"     \ 'Rv'     : 'R',
+"     \ 's'      : 'S',
+"     \ 'S'      : 'S',
+"     \ ''     : 'S',
+"     \ 't'      : 'T',
+"     \ 'v'      : 'V',
+"     \ 'V'      : 'V',
+"     \ ''     : 'V',
+"     \ }
+let g:airline_filetype_overrides = {
+    \ 'coc-explorer':  [ 'CoC Explorer', '' ],
+    \ 'defx':  ['defx', '%{b:defx.paths[0]}'],
+    \ 'fugitive': ['fugitive', '%{airline#util#wrap(airline#extensions#branch#get_head(),80)}'],
+    \ 'floggraph':  [ 'Flog', '%{get(b:, "flog_status_summary", "")}' ],
+    \ 'gundo': [ 'Gundo', '' ],
+    \ 'help':  [ 'Help', '%f' ],
+    \ 'minibufexpl': [ 'MiniBufExplorer', '' ],
+    \ 'nerdtree': [ get(g:, 'NERDTreeStatusline', 'NERD'), '' ],
+    \ 'startify': [ 'startify', '' ],
+    \ 'vim-plug': [ 'Plugins', '' ],
+    \ 'vimfiler': [ 'vimfiler', '%{vimfiler#get_status_string()}' ],
+    \ 'vimshell': ['vimshell','%{vimshell#get_status_string()}'],
+    \ 'vaffle' : [ 'Vaffle', '%{b:vaffle.dir}' ],
+    \ }
 
-function LightlineBufferlineFilter(buffer)
-  return getbufvar(a:buffer, '&buftype') !=# 'terminal'
+nmap <leader>- <Plug>AirlineSelectPrevTab
+nmap <leader>+ <Plug>AirlineSelectNextTab
+
+"coc-lists
+" grep word under cursor
+command! -nargs=+ -complete=custom,s:GrepArgs CocRg exe 'CocList grep '.<q-args>
+
+function! s:GrepArgs(...)
+  let list = ['-S', '-smartcase', '-i', '-ignorecase', '-w', '-word',
+        \ '-e', '-regex', '-u', '-skip-vcs-ignores', '-t', '-extension']
+  return join(list, "\n")
 endfunction
-let g:lightline#bufferline#buffer_filter = "LightlineBufferlineFilter"
 
-autocmd BufWritePost,TextChanged,TextChangedI * call lightline#update()
+" Keymapping for grep word under cursor with interactive mode
+nnoremap <silent> <Leader>c :exe 'CocList -I --input='.expand('<cword>').' grep'<CR>
+
+nnoremap <silent> <space>w  :exe 'CocList -I --normal --input='.expand('<cword>').' words'<CR>
+
+vnoremap <leader>g :<C-u>call <SID>GrepFromSelected(visualmode())<CR>
+nnoremap <leader>g :<C-u>set operatorfunc=<SID>GrepFromSelected<CR>g@
+
+function! s:GrepFromSelected(type)
+  let saved_unnamed_register = @@
+  if a:type ==# 'v'
+    normal! `<v`>y
+  elseif a:type ==# 'char'
+    normal! `[v`]y
+  else
+    return
+  endif
+  let word = substitute(@@, '\n$', '', 'g')
+  let word = escape(word, '| ')
+  let @@ = saved_unnamed_register
+  execute 'CocList grep '.word
+endfunction
+
+"startify
+let g:startify_update_oldfiles = 1
+let g:startify_files_number = 9
+let g:startify_change_to_dir = 0
+let g:startify_session_persistence = 1
+let g:startify_session_before_save = [ 'silent! NERDTreeClose' ]
+
+augroup startify_aug
+  au!
+  au FileType startify IndentLinesDisable
+augroup END
+
+function! s:list_commits()
+  let l:not_repo = str2nr(system("git rev-parse >/dev/null 2>&1; echo $?"))
+  if l:not_repo | return | endif
+  let list_cmd = 'git log --oneline | head -n7'
+  if executable('emojify') | let list_cmd .= ' | emojify' | endif
+  let commits = systemlist(list_cmd)
+  return map(commits, '{"line": matchstr(v:val, "\\s\\zs.*"), "cmd": "Git show ". matchstr(v:val, "^\\x\\+") }')
+  " return map(commits, '{"line": {matchstr(v:val, "^\\x\\+"): matchstr(v:val, "\\s\\zs.*")}, "cmd": "Git show ". matchstr(v:val, "^\\x\\+") }')
+endfunction
+
+let g:startify_lists = [
+	\ { 'header': ['   MRU '. getcwd()], 'type': 'dir' },
+	\ { 'header': ['   MRU'],            'type': 'files' },
+	\ { 'header': ['   Sessions'],       'type': 'sessions' },
+	\ { 'header': ['   Commits'],        'type': function('s:list_commits') },
+	\ ]
+
+"coc-explorer
+nmap <Leader>er <Cmd>call CocAction('runCommand', 'explorer.doAction','closest', ['reveal:0'], [['relative', 0, 'file']])<CR>
+let g:coc_explorer_global_presets = {
+\   '.vim': {
+\     'root-uri': '~/.vim',
+\   },
+\   'cocConfig': {
+\      'root-uri': '~/.config/coc',
+\   },
+\   'tab': {
+\     'position': 'tab',
+\     'quit-on-open': v:true,
+\   },
+\   'tab:$': {
+\     'position': 'tab:$',
+\     'quit-on-open': v:true,
+\   },
+\   'floating': {
+\     'position': 'floating',
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingTop': {
+\     'position': 'floating',
+\     'floating-position': 'center-top',
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingLeftside': {
+\     'position': 'floating',
+\     'floating-position': 'left-center',
+\     'floating-width': 50,
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingRightside': {
+\     'position': 'floating',
+\     'floating-position': 'right-center',
+\     'floating-width': 50,
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'simplify': {
+\     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
+\   },
+\   'buffer': {
+\     'sources': [{'name': 'buffer', 'expand': v:true}]
+\   },
+\ }
+
+" Use preset argument to open it
+nmap <space>ed <Cmd>CocCommand explorer --preset .vim<CR>
+nmap <space>ef <Cmd>CocCommand explorer --preset floating<CR>
+nmap <space>ec <Cmd>CocCommand explorer --preset cocConfig<CR>
+nmap <space>eb <Cmd>CocCommand explorer --preset buffer<CR>
+
+" List all presets
+nmap <space>el <Cmd>CocList explPresets<CR>
