@@ -49,11 +49,12 @@ Plug 'theniceboy/vim-snippets'
 Plug 'Shougo/deoplete.nvim'
 Plug 'mbbill/fencview'
 Plug 'yuttie/comfortable-motion.vim'
-Plug 'edkolev/tmuxline.vim'
+" Plug 'edkolev/tmuxline.vim'
 Plug 'voldikss/vim-translator'
 Plug 'powerline/powerline', {'rtp': 'powerline/bindings/vim'}
-Plug 'github/copilot.vim'
-" Plug 'mildred/vim-bufmru'
+" Plug 'github/copilot.vim'
+Plug 'mildred/vim-bufmru'
+Plug 'yianwillis/vimcdoc'
 " Plug 'liuchengxu/vim-which-key'
 " Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 " Plug 'skywind3000/vim-quickui'
@@ -165,7 +166,7 @@ map 0 ^
 set undofile
 set undodir=~/.vim/undodir
 
-nnoremap <leader>ev :vsp $MYVIMRC<CR>
+nnoremap <leader>ve :vsp $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " no clear screen when exit vim
@@ -201,10 +202,21 @@ let g:gitgutter_map_keys = 0
 let g:gitgutter_override_sign_column_highlight = 0
 let g:gitgutter_preview_win_floating = 1
 autocmd BufWritePost * GitGutter
-nnoremap <LEADER>gf :GitGutterFold<CR>
+nnoremap <LEADER>f :GitGutterFold<CR>
 nnoremap H :GitGutterPreviewHunk<CR>
-nnoremap <LEADER>g- :GitGutterPrevHunk<CR>
-nnoremap <LEADER>g= :GitGutterNextHunk<CR>
+command! Gqf GitGutterQuickFix | copen
+set foldtext=gitgutter#fold#foldtext()
+" Your vimrc
+function! GitStatus()
+      let [a,m,r] = GitGutterGetHunkSummary()
+        return printf('+%d ~%d -%d', a, m, r)
+endfunction
+set statusline+=%{GitStatus()}
+let g:gitgutter_set_sign_backgrounds = 1
+" highlight GitGutterAdd    guifg=#009900 ctermfg=2
+" highlight GitGutterChange guifg=#bbbb00 ctermfg=3
+" highlight GitGutterDelete guifg=#ff2222 ctermfg=1
+" highlight link GitGutterChangeLineNr Underlined
 
 
 " move cursor in insert mode
@@ -327,9 +339,9 @@ let g:go_highlight_methods = 1
 let g:go_highlight_generate_tags = 1
 let g:go_fmt_fail_silently = 1
 " 直接通过 go run 执行当前文件
-autocmd FileType go nmap <leader>r :GoRun %<CR>
+autocmd FileType go nmap <leader>R :GoRun %<CR>
 autocmd FileType go nmap <leader>T :GoTestFunc<CR>
-autocmd FileType go nmap <leader>b :GoBuild<CR>
+autocmd FileType go nmap <leader>B :GoBuild<CR>
 augroup go_map
   au!
   au FileType go nmap <leader>rt <Plug>(go-run-tab)
@@ -618,6 +630,8 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
 " Manage extensions
 nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+
+nnoremap <silent> <space>m  :<C-u>CocList marketplace<cr>
 " Show commands
 nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
 " Find symbol of current document
@@ -677,17 +691,17 @@ let g:airline#extensions#tabline#show_tabs = 1
 let g:airline#extensions#tabline#show_tab_count = 1
 let g:airline#extensions#tabline#show_tab_type = 1
 let g:airline#extensions#tabline#buffer_idx_format = {
-    \ '0': '0 ',
-    \ '1': '1 ',
-    \ '2': '2 ',
-    \ '3': '3 ',
-    \ '4': '4 ',
-    \ '5': '5 ',
-    \ '6': '6 ',
-    \ '7': '7 ',
-    \ '8': '8 ',
-    \ '9': '9 '
-    \}
+            \ '0': '0 ',
+            \ '1': '1 ',
+            \ '2': '2 ',
+            \ '3': '3 ',
+            \ '4': '4 ',
+            \ '5': '5 ',
+            \ '6': '6 ',
+            \ '7': '7 ',
+            \ '8': '8 ',
+            \ '9': '9 '
+            \}
 let g:airline_powerline_fonts = 1
 " let g:airline_mode_map = {
 "     \ '__'     : '-',
@@ -725,6 +739,16 @@ let g:airline_filetype_overrides = {
     \ 'vaffle' : [ 'Vaffle', '%{b:vaffle.dir}' ],
     \ }
 
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+nmap <leader>0 <Plug>AirlineSelectTab0
 nmap <leader>- <Plug>AirlineSelectPrevTab
 nmap <leader>+ <Plug>AirlineSelectNextTab
 
@@ -733,9 +757,9 @@ nmap <leader>+ <Plug>AirlineSelectNextTab
 command! -nargs=+ -complete=custom,s:GrepArgs CocRg exe 'CocList grep '.<q-args>
 
 function! s:GrepArgs(...)
-  let list = ['-S', '-smartcase', '-i', '-ignorecase', '-w', '-word',
-        \ '-e', '-regex', '-u', '-skip-vcs-ignores', '-t', '-extension']
-  return join(list, "\n")
+    let list = ['-S', '-smartcase', '-i', '-ignorecase', '-w', '-word',
+                \ '-e', '-regex', '-u', '-skip-vcs-ignores', '-t', '-extension']
+    return join(list, "\n")
 endfunction
 
 " Keymapping for grep word under cursor with interactive mode
@@ -744,21 +768,21 @@ nnoremap <silent> <Leader>c :exe 'CocList -I --input='.expand('<cword>').' grep'
 nnoremap <silent> <space>w  :exe 'CocList -I --normal --input='.expand('<cword>').' words'<CR>
 
 vnoremap <leader>g :<C-u>call <SID>GrepFromSelected(visualmode())<CR>
-nnoremap <leader>g :<C-u>set operatorfunc=<SID>GrepFromSelected<CR>g@
+" nnoremap <leader>g :<C-u>set operatorfunc=<SID>GrepFromSelected<CR>g@
 
 function! s:GrepFromSelected(type)
-  let saved_unnamed_register = @@
-  if a:type ==# 'v'
-    normal! `<v`>y
-  elseif a:type ==# 'char'
-    normal! `[v`]y
-  else
-    return
-  endif
-  let word = substitute(@@, '\n$', '', 'g')
-  let word = escape(word, '| ')
-  let @@ = saved_unnamed_register
-  execute 'CocList grep '.word
+    let saved_unnamed_register = @@
+    if a:type ==# 'v'
+        normal! `<v`>y
+    elseif a:type ==# 'char'
+        normal! `[v`]y
+    else
+        return
+    endif
+    let word = substitute(@@, '\n$', '', 'g')
+    let word = escape(word, '| ')
+    let @@ = saved_unnamed_register
+    execute 'CocList grep '.word
 endfunction
 
 "startify
@@ -769,72 +793,72 @@ let g:startify_session_persistence = 1
 let g:startify_session_before_save = [ 'silent! NERDTreeClose' ]
 
 augroup startify_aug
-  au!
-  au FileType startify IndentLinesDisable
+    au!
+    au FileType startify IndentLinesDisable
 augroup END
 
 function! s:list_commits()
-  let l:not_repo = str2nr(system("git rev-parse >/dev/null 2>&1; echo $?"))
-  if l:not_repo | return | endif
-  let list_cmd = 'git log --oneline | head -n7'
-  if executable('emojify') | let list_cmd .= ' | emojify' | endif
-  let commits = systemlist(list_cmd)
-  return map(commits, '{"line": matchstr(v:val, "\\s\\zs.*"), "cmd": "Git show ". matchstr(v:val, "^\\x\\+") }')
-  " return map(commits, '{"line": {matchstr(v:val, "^\\x\\+"): matchstr(v:val, "\\s\\zs.*")}, "cmd": "Git show ". matchstr(v:val, "^\\x\\+") }')
+    let l:not_repo = str2nr(system("git rev-parse >/dev/null 2>&1; echo $?"))
+    if l:not_repo | return | endif
+    let list_cmd = 'git log --oneline | head -n7'
+    if executable('emojify') | let list_cmd .= ' | emojify' | endif
+    let commits = systemlist(list_cmd)
+    return map(commits, '{"line": matchstr(v:val, "\\s\\zs.*"), "cmd": "Git show ". matchstr(v:val, "^\\x\\+") }')
+    " return map(commits, '{"line": {matchstr(v:val, "^\\x\\+"): matchstr(v:val, "\\s\\zs.*")}, "cmd": "Git show ". matchstr(v:val, "^\\x\\+") }')
 endfunction
 
 let g:startify_lists = [
-	\ { 'header': ['   MRU '. getcwd()], 'type': 'dir' },
-	\ { 'header': ['   MRU'],            'type': 'files' },
-	\ { 'header': ['   Sessions'],       'type': 'sessions' },
-	\ { 'header': ['   Commits'],        'type': function('s:list_commits') },
-	\ ]
+    \ { 'header': ['   MRU '. getcwd()], 'type': 'dir' },
+    \ { 'header': ['   MRU'],            'type': 'files' },
+    \ { 'header': ['   Sessions'],       'type': 'sessions' },
+    \ { 'header': ['   Commits'],        'type': function('s:list_commits') },
+    \ ]
 
 "coc-explorer
 nmap <Leader>er <Cmd>call CocAction('runCommand', 'explorer.doAction','closest', ['reveal:0'], [['relative', 0, 'file']])<CR>
 let g:coc_explorer_global_presets = {
-\   '.vim': {
-\     'root-uri': '~/.vim',
-\   },
-\   'cocConfig': {
-\      'root-uri': '~/.config/coc',
-\   },
-\   'tab': {
-\     'position': 'tab',
-\     'quit-on-open': v:true,
-\   },
-\   'tab:$': {
-\     'position': 'tab:$',
-\     'quit-on-open': v:true,
-\   },
-\   'floating': {
-\     'position': 'floating',
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'floatingTop': {
-\     'position': 'floating',
-\     'floating-position': 'center-top',
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'floatingLeftside': {
-\     'position': 'floating',
-\     'floating-position': 'left-center',
-\     'floating-width': 50,
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'floatingRightside': {
-\     'position': 'floating',
-\     'floating-position': 'right-center',
-\     'floating-width': 50,
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'simplify': {
-\     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
-\   },
-\   'buffer': {
-\     'sources': [{'name': 'buffer', 'expand': v:true}]
-\   },
-\ }
+    \   '.vim': {
+    \     'root-uri': '~/.vim',
+    \   },
+    \   'cocConfig': {
+    \      'root-uri': '~/.config/coc',
+    \   },
+    \   'tab': {
+    \     'position': 'tab',
+    \     'quit-on-open': v:true,
+    \   },
+    \   'tab:$': {
+    \     'position': 'tab:$',
+    \     'quit-on-open': v:true,
+    \   },
+    \   'floating': {
+    \     'position': 'floating',
+    \     'open-action-strategy': 'sourceWindow',
+    \   },
+    \   'floatingTop': {
+    \     'position': 'floating',
+    \     'floating-position': 'center-top',
+    \     'open-action-strategy': 'sourceWindow',
+    \   },
+    \   'floatingLeftside': {
+    \     'position': 'floating',
+    \     'floating-position': 'left-center',
+    \     'floating-width': 50,
+    \     'open-action-strategy': 'sourceWindow',
+    \   },
+    \   'floatingRightside': {
+    \     'position': 'floating',
+    \     'floating-position': 'right-center',
+    \     'floating-width': 50,
+    \     'open-action-strategy': 'sourceWindow',
+    \   },
+    \   'simplify': {
+    \     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
+    \   },
+    \   'buffer': {
+    \     'sources': [{'name': 'buffer', 'expand': v:true}]
+    \   },
+    \ }
 
 " Use preset argument to open it
 nmap <space>ed <Cmd>CocCommand explorer --preset .vim<CR>
@@ -844,3 +868,29 @@ nmap <space>eb <Cmd>CocCommand explorer --preset buffer<CR>
 
 " List all presets
 nmap <space>el <Cmd>CocList explPresets<CR>
+
+"bufferline
+let g:bufferline_echo = 0
+autocmd VimEnter *
+            \ let &statusline='%{bufferline#refresh_status()}'
+            \ .bufferline#get_status_string()
+
+let g:bufferline_active_buffer_left = '['
+let g:bufferline_active_buffer_right = ']'
+
+" navigate chunks of current buffer
+nmap [g <Plug>(coc-git-prevchunk)
+nmap ]g <Plug>(coc-git-nextchunk)
+" navigate conflicts of current buffer
+" nmap [c <Plug>(coc-git-prevconflict)
+" nmap ]c <Plug>(coc-git-nextconflict)
+" show chunk diff at current position
+nmap gs <Plug>(coc-git-chunkinfo)
+" show commit contains current position
+nmap cc <Plug>(coc-git-commit)
+" create text object for git chunks
+omap ig <Plug>(coc-git-chunk-inner)
+xmap ig <Plug>(coc-git-chunk-inner)
+omap ag <Plug>(coc-git-chunk-outer)
+xmap ag <Plug>(coc-git-chunk-outer)
+nnoremap <silent> <space>g  :<C-u>CocList --normal gstatus<CR>

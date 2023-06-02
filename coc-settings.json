@@ -17,10 +17,8 @@
             "analyses.fieldalignment": true
         }
     },
-    "coc.preferences.semanticTokensHighlights": false,
+    "coc.preferences.silentAutoupdate": true,
     "coc.preferences.useQuickfixForLocations": false,
-    "coc.preferences.enableFloatHighlight": true,
-    "coc.preferences.snippetStatusText": "Ⓢ ",
     "coc.preferences.extensionUpdateCheck": "daily",
     "coc.preferences.messageLevel": "error",
     "coc.source.around.firstMatch": false,
@@ -32,12 +30,12 @@
     "suggest.triggerAfterInsertEnter": true,
     "suggest.autoTrigger": "always",
     "suggest.timeout": 5000,
-    "suggest.enablePreview": true,
-    "suggest.floatEnable": true,
+    "suggest.enableFloat": true,
+    "suggest.virtualText": true,
+    "suggest.snippetsSupport": true,
     "suggest.detailField": "preview",
     "suggest.snippetIndicator": "",
     "suggest.triggerCompletionWait": 50,
-    "suggest.echodocSupport": true,
     "suggest.completionItemKindLabels": {
         "keyword": "\uf1de",
         "variable": "\ue79b",
@@ -48,7 +46,7 @@
         "reference": "\ufa46",
         "constant": "\uf8fe",
         "method": "\uf09a",
-        "struct": "\ufb44",
+        "struct": "",
         "class": "\uf0e8",
         "interface": "\uf417",
         "text": "\ue612",
@@ -66,7 +64,7 @@
         "typeParameter": "\uf728",
         "default": "\uf29c"
     },
-    "diagnostic.signOffset": 1,
+    "diagnostic.autoRefresh": true,
     "diagnostic.errorSign": "\uf467",
     "diagnostic.warningSign": "\uf071",
     "diagnostic.infoSign": "\uf129",
@@ -201,8 +199,6 @@
         ">>": "gitUnstage"
     },
     "tslint.autoFixOnSave": false,
-    "python.autoComplete.addBrackets": true,
-    "python.jediEnabled": true,
     "python.formatting.provider": "yapf",
     "python.formatting.yapfArgs": [
         "--style",
@@ -249,5 +245,11 @@
     "diagnostic-languageserver.formatFiletypes": {
         "elixir": "mix_format",
         "eelixir": "mix_format"
-    }
+    },
+    "git.addedSign.hlGroup": "GitGutterAdd",
+    "git.changedSign.hlGroup": "GitGutterChange",
+    "git.removedSign.hlGroup": "GitGutterDelete",
+    "git.topRemovedSign.hlGroup": "GitGutterDelete",
+    "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
+    "git.addGBlameToVirtualText": true
 }
